@@ -52,25 +52,22 @@ root_url = {{ grafana_url }}
 welcome_email_on_sign_up = {{ grafana_welcome_email_on_sign_up }}
 
 # Authentication
-{% if grafana_auth != {} %}
 [auth]
-disable_login_form = {{ grafana_auth.disable_login_form | default('False') }}
-disable_signout_menu = {{ grafana_auth.disable_signout_menu | default('False') }}
-{%  for section, options in grafana_auth.items() %}
-{%    if section in ['disable_login_form', 'disable_signout_menu'] %}
-{%    elif section == 'basic' %}
-[auth.basic]
-enabled = True
-{%    else %}
-[auth.{{ section }}]
-enabled = True
-{%      for k, v in options.items() %}
-{%        if k != 'enabled' %}{{ k }} = {{ v }}
-{%        endif %}
-{%      endfor %}
-{%    endif %}
-{%  endfor %}
-{% endif %}
+disable_login_form = {{ disable_login_form | default('False') }}
+disable_signout_menu = {{ disable_signout_menu | default('False') }}
+
+[auth.{{ auth_type }}]
+enabled = true
+name = {{ auth_name }}
+allow_sign_up = {{ auth_sign_up }}
+client_id = {{ auth_client_id }}
+client_secret = {{ auth_client_secret }}
+scopes = {{ auth_scopes }}
+auth_url = {{ auth_url }}
+token_url = {{ auth_token_url }}
+api_url = {{ auth_api_url }}
+team_ids = 
+allowed_organizations = 
 
 # Session
 {% if grafana_session != {} %}
@@ -103,19 +100,14 @@ enabled = True
 {% endif %}
 
 # SMTP and email config
-{% if grafana_smtp != {} %}
 [smtp]
 enabled = True
-{%   for k,v in grafana_smtp.items() %}
-{%     if k == 'enabled' %}{% endif %}
-{%     if k == 'password' %}
-{{ k }} = """{{ v }}"""
-{%     else %}
-{{ k }} = {{ v }}
-{%     endif %}
-{%   endfor %}
-{% endif %}
-
+host = {{ smtp_host }}
+user = {{ smtp_user }}
+password = {{ smtp_password }}
+skip_verify = {{ smtp_verify }}
+from_address = {{ smtp_from_address }}
+from_name = {{ smtp_from_name }}
 # Logging
 [log]
 mode = console file
